@@ -1,0 +1,42 @@
+
+services: 
+  app-deployed:
+    image: app:1.0
+    ports: 
+      - 3001:3000
+    networks:
+      - deployment-network
+    
+  mongodb:
+    image:  mongo:4.4.17-focal
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - db-data:/data/db
+    networks:
+      - deployment-network
+
+  mongo-express:
+    image: mongo-express:0.54.0
+    restart: always
+    container_name: mongo-express
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    networks:
+      - deployment-network
+
+volumes: 
+   db-data:
+    driver: local
+
+networks:
+  deployment-network:
+    driver: bridge 
